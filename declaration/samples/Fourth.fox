@@ -1,0 +1,20 @@
+// Parametr przez zmienna / wartosc
+
+int przezZmienna(var int zmienna) {
+    zmienna = zmienna + 1 ;
+    return zmienna;
+}
+
+int przezWartosc(int zmienna) {
+    zmienna = zmienna + 1 ;
+    return zmienna;
+}
+
+int main() {
+    int x = 0;
+    int y = 0;
+
+    int skip = przezZmienna(x) + przezWartosc(y);
+
+    return 0;
+}

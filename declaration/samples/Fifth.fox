@@ -1,0 +1,27 @@
+// Zagniezdzone funkcje zgodnie ze statycznym wiazaniem
+
+int zewnetrzna() {
+    int x = 500;
+
+    int zmglob() {
+        x = x + 1;
+        printInt(x); // zewnętrzny x: 501
+        return x;
+    }
+
+    int zmlok() {
+        int x = 10;
+        zmglob();
+        print(x); // lokalny x: 10
+        return x;
+    }
+
+    int skip1 = zmlok();
+    print(x); // zewnętrzny x: 501
+    return x;
+}
+
+int main() {
+    int skip = zewnetrzna();
+    return 0;
+}
