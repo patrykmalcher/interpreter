@@ -1,30 +1,18 @@
--- Programs ----------------------------------
+-- Programs ------------------------------------
 
 entrypoints Program ;
 
-Prog. Program ::= [Fun] ;
+Prog. Program ::= [Stmt] ;
 
-FunDef. Fun ::= Type Ident "(" [Arg] ")" Block ;
-
-separator nonempty Fun "" ;
-
-ArgVar. Arg ::= "var" Type Ident ;
-
-ArgVal. Arg ::= Type Ident ;
-
-separator  Arg "," ;
-
--- Statements --------------------------------
+-- Statements ----------------------------------
 
 Bl. Block ::= "{" [Stmt] "}" ;
 
 separator  Stmt "" ;
 
-BlockStmt. Stmt ::= Block ;
+BlStmt. Stmt ::= Block ;
 
 Decl.      Stmt ::= Type [Item] ";" ;
-
-NoInit.    Item ::= Ident ; 
 
 Init.      Item ::= Ident "=" Expr ;
 
@@ -44,7 +32,17 @@ SExp.      Stmt ::= Expr  ";" ;
 
 FSt. Stmt ::= Fun ;
 
--- Types -------------------------------------
+-- Function
+
+FunDef. Fun ::= Type Ident "(" [Arg] ")" Block ;
+
+ArgVar. Arg ::= "var" Type Ident ;
+
+ArgVal. Arg ::= Type Ident ;
+
+separator  Arg "," ;
+
+-- Types ---------------------------------------
 
 Int.  Type ::= "int" ;
 
@@ -52,7 +50,7 @@ Str.  Type ::= "string" ;
 
 Bool. Type ::= "boolean" ;
 
--- Expressions ---------------------------------------------
+-- Expressions ---------------------------------
 
 EVar.      Expr6 ::= Ident ;
 
@@ -84,7 +82,7 @@ coercions  Expr 6 ;
 
 separator  Expr "," ;
 
--- operators -----------------------------------------------
+-- operators -----------------------------------
 
 Plus.      AddOp ::= "+" ;
 
@@ -108,6 +106,6 @@ EQU.       RelOp ::= "==" ;
 
 NE.        RelOp ::= "!=" ;
 
--- comments ------------------------------------------------
+-- comments ------------------------------------
 
 comment    "//" ;

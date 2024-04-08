@@ -21,16 +21,7 @@ transIdent x = case x of
 
 transProgram :: Fox.Abs.Program -> Result
 transProgram x = case x of
-  Fox.Abs.Prog funs -> failure x
-
-transFun :: Fox.Abs.Fun -> Result
-transFun x = case x of
-  Fox.Abs.FunDef type_ ident args block -> failure x
-
-transArg :: Fox.Abs.Arg -> Result
-transArg x = case x of
-  Fox.Abs.ArgVar type_ ident -> failure x
-  Fox.Abs.ArgVal type_ ident -> failure x
+  Fox.Abs.Prog stmts -> failure x
 
 transBlock :: Fox.Abs.Block -> Result
 transBlock x = case x of
@@ -38,7 +29,7 @@ transBlock x = case x of
 
 transStmt :: Fox.Abs.Stmt -> Result
 transStmt x = case x of
-  Fox.Abs.BlockStmt block -> failure x
+  Fox.Abs.BlStmt block -> failure x
   Fox.Abs.Decl type_ items -> failure x
   Fox.Abs.Ass ident expr -> failure x
   Fox.Abs.Ret expr -> failure x
@@ -50,8 +41,16 @@ transStmt x = case x of
 
 transItem :: Fox.Abs.Item -> Result
 transItem x = case x of
-  Fox.Abs.NoInit ident -> failure x
   Fox.Abs.Init ident expr -> failure x
+
+transFun :: Fox.Abs.Fun -> Result
+transFun x = case x of
+  Fox.Abs.FunDef type_ ident args block -> failure x
+
+transArg :: Fox.Abs.Arg -> Result
+transArg x = case x of
+  Fox.Abs.ArgVar type_ ident -> failure x
+  Fox.Abs.ArgVal type_ ident -> failure x
 
 transType :: Fox.Abs.Type -> Result
 transType x = case x of

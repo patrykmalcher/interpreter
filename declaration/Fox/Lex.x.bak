@@ -167,9 +167,9 @@ resWords =
        (b "else" 20
           (b ">=" 18 (b ">" 17 N N) (b "boolean" 19 N N))
           (b "if" 22 (b "false" 21 N N) (b "int" 23 N N)))
-       (b "{" 28
-          (b "true" 26 (b "string" 25 N N) (b "while" 27 N N))
-          (b "}" 30 (b "||" 29 N N) N)))
+       (b "while" 28
+          (b "true" 26 (b "string" 25 N N) (b "var" 27 N N))
+          (b "||" 30 (b "{" 29 N N) (b "}" 31 N N))))
   where
   b s n = B bs (TS bs n)
     where

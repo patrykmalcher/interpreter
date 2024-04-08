@@ -70,13 +70,11 @@ String  :: { String }
 String   : L_quoted { $1 }
 
 Program :: { Fox.Abs.Program }
-Program : ListFun { Fox.Abs.Program $1 }
+Program : ListStmt { Fox.Abs.Prog $1 }
 
 Fun :: { Fox.Abs.Fun }
-Fun : Type Ident '(' ListArg ')' Block { Fox.Abs.Fun $1 $2 $4 $6 }
-
-ListFun :: { [Fox.Abs.Fun] }
-ListFun : Fun { (:[]) $1 } | Fun ListFun { (:) $1 $2 }
+Fun
+  : Type Ident '(' ListArg ')' Block { Fox.Abs.FunDef $1 $2 $4 $6 }
 
 Arg :: { Fox.Abs.Arg }
 Arg
@@ -90,7 +88,7 @@ ListArg
   | Arg ',' ListArg { (:) $1 $3 }
 
 Block :: { Fox.Abs.Block }
-Block : '{' ListStmt '}' { Fox.Abs.Block $2 }
+Block : '{' ListStmt '}' { Fox.Abs.Bl $2 }
 
 ListStmt :: { [Fox.Abs.Stmt] }
 ListStmt : {- empty -} { [] } | Stmt ListStmt { (:) $1 $2 }

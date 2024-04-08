@@ -32,7 +32,7 @@ The set of reserved words is the set of terminals appearing in the grammar. Thos
 The reserved words used in Fox are the following:
   | ``boolean`` | ``else`` | ``false`` | ``if``
   | ``int`` | ``return`` | ``string`` | ``true``
-  | ``while`` |  |  |
+  | ``var`` | ``while`` |  |
 
 The symbols used in Fox are the following:
   | ( | ) | , | {
@@ -51,11 +51,10 @@ The symbols -> (production),  **|**  (union)
 and **eps** (empty rule) belong to the BNF notation.
 All other symbols are terminals.
 
-  | //Program// | -> | //[Fun]//
+  | //Program// | -> | //[Stmt]//
   | //Fun// | -> | //Type// //Ident// ``(`` //[Arg]// ``)`` //Block//
-  | //[Fun]// | -> | //Fun//
-  |  |  **|**  | //Fun// //[Fun]//
-  | //Arg// | -> | //Type// //Ident//
+  | //Arg// | -> | ``var`` //Type// //Ident//
+  |  |  **|**  | //Type// //Ident//
   | //[Arg]// | -> | **eps**
   |  |  **|**  | //Arg//
   |  |  **|**  | //Arg// ``,`` //[Arg]//

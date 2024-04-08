@@ -10,11 +10,6 @@ int przezWartosc(int zmienna) {
     return zmienna;
 }
 
-int main() {
-    int x = 0;
-    int y = 0;
+int x = 0, y = 0;
 
-    int skip = przezZmienna(x) + przezWartosc(y);
-
-    return 0;
-}
+int skip = przezZmienna(x) + przezWartosc(y);

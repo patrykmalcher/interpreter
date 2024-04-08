@@ -10,16 +10,16 @@ import Prelude (Integer, String)
 import qualified Prelude as C (Eq, Ord, Show, Read)
 import qualified Data.String
 
-data Program = Program [Fun]
+data Program = Prog [Stmt]
   deriving (C.Eq, C.Ord, C.Show, C.Read)
 
-data Fun = Fun Type Ident [Arg] Block
+data Fun = FunDef Type Ident [Arg] Block
   deriving (C.Eq, C.Ord, C.Show, C.Read)
 
 data Arg = ArgVar Type Ident | ArgVal Type Ident
   deriving (C.Eq, C.Ord, C.Show, C.Read)
 
-data Block = Block [Stmt]
+data Block = Bl [Stmt]
   deriving (C.Eq, C.Ord, C.Show, C.Read)
 
 data Stmt

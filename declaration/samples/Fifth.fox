@@ -1,4 +1,4 @@
-// Zagniezdzone funkcje zgodnie ze statycznym wiazaniem
+// Zagnieżdżone funkcje, statyczne wiązanie
 
 int zewnetrzna() {
     int x = 500;
@@ -21,7 +21,4 @@ int zewnetrzna() {
     return x;
 }
 
-int main() {
-    int skip = zewnetrzna();
-    return 0;
-}
+int skip = zewnetrzna();

@@ -141,26 +141,7 @@ instance Print Fox.Abs.Ident where
   prt _ (Fox.Abs.Ident i) = doc $ showString i
 instance Print Fox.Abs.Program where
   prt i = \case
-    Fox.Abs.Prog funs -> prPrec i 0 (concatD [prt 0 funs])
-
-instance Print Fox.Abs.Fun where
-  prt i = \case
-    Fox.Abs.FunDef type_ id_ args block -> prPrec i 0 (concatD [prt 0 type_, prt 0 id_, doc (showString "("), prt 0 args, doc (showString ")"), prt 0 block])
-
-instance Print [Fox.Abs.Fun] where
-  prt _ [] = concatD []
-  prt _ [x] = concatD [prt 0 x]
-  prt _ (x:xs) = concatD [prt 0 x, prt 0 xs]
-
-instance Print Fox.Abs.Arg where
-  prt i = \case
-    Fox.Abs.ArgVar type_ id_ -> prPrec i 0 (concatD [doc (showString "var"), prt 0 type_, prt 0 id_])
-    Fox.Abs.ArgVal type_ id_ -> prPrec i 0 (concatD [prt 0 type_, prt 0 id_])
-
-instance Print [Fox.Abs.Arg] where
-  prt _ [] = concatD []
-  prt _ [x] = concatD [prt 0 x]
-  prt _ (x:xs) = concatD [prt 0 x, doc (showString ","), prt 0 xs]
+    Fox.Abs.Prog stmts -> prPrec i 0 (concatD [prt 0 stmts])
 
 instance Print Fox.Abs.Block where
   prt i = \case
@@ -172,7 +153,7 @@ instance Print [Fox.Abs.Stmt] where
 
 instance Print Fox.Abs.Stmt where
   prt i = \case
-    Fox.Abs.BlockStmt block -> prPrec i 0 (concatD [prt 0 block])
+    Fox.Abs.BlStmt block -> prPrec i 0 (concatD [prt 0 block])
     Fox.Abs.Decl type_ items -> prPrec i 0 (concatD [prt 0 type_, prt 0 items, doc (showString ";")])
     Fox.Abs.Ass id_ expr -> prPrec i 0 (concatD [prt 0 id_, doc (showString "="), prt 0 expr, doc (showString ";")])
     Fox.Abs.Ret expr -> prPrec i 0 (concatD [doc (showString "return"), prt 0 expr, doc (showString ";")])
@@ -184,10 +165,23 @@ instance Print Fox.Abs.Stmt where
 
 instance Print Fox.Abs.Item where
   prt i = \case
-    Fox.Abs.NoInit id_ -> prPrec i 0 (concatD [prt 0 id_])
     Fox.Abs.Init id_ expr -> prPrec i 0 (concatD [prt 0 id_, doc (showString "="), prt 0 expr])
 
 instance Print [Fox.Abs.Item] where
+  prt _ [] = concatD []
+  prt _ [x] = concatD [prt 0 x]
+  prt _ (x:xs) = concatD [prt 0 x, doc (showString ","), prt 0 xs]
+
+instance Print Fox.Abs.Fun where
+  prt i = \case
+    Fox.Abs.FunDef type_ id_ args block -> prPrec i 0 (concatD [prt 0 type_, prt 0 id_, doc (showString "("), prt 0 args, doc (showString ")"), prt 0 block])
+
+instance Print Fox.Abs.Arg where
+  prt i = \case
+    Fox.Abs.ArgVar type_ id_ -> prPrec i 0 (concatD [doc (showString "var"), prt 0 type_, prt 0 id_])
+    Fox.Abs.ArgVal type_ id_ -> prPrec i 0 (concatD [prt 0 type_, prt 0 id_])
+
+instance Print [Fox.Abs.Arg] where
   prt _ [] = concatD []
   prt _ [x] = concatD [prt 0 x]
   prt _ (x:xs) = concatD [prt 0 x, doc (showString ","), prt 0 xs]

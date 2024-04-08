@@ -70,14 +70,35 @@ String  :: { String }
 String   : L_quoted { $1 }
 
 Program :: { Fox.Abs.Program }
-Program : ListFun { Fox.Abs.Prog $1 }
+Program : ListStmt { Fox.Abs.Prog $1 }
+
+Block :: { Fox.Abs.Block }
+Block : '{' ListStmt '}' { Fox.Abs.Bl $2 }
+
+ListStmt :: { [Fox.Abs.Stmt] }
+ListStmt : {- empty -} { [] } | Stmt ListStmt { (:) $1 $2 }
+
+Stmt :: { Fox.Abs.Stmt }
+Stmt
+  : Block { Fox.Abs.BlStmt $1 }
+  | Type ListItem ';' { Fox.Abs.Decl $1 $2 }
+  | Ident '=' Expr ';' { Fox.Abs.Ass $1 $3 }
+  | 'return' Expr ';' { Fox.Abs.Ret $2 }
+  | 'if' '(' Expr ')' Stmt { Fox.Abs.If $3 $5 }
+  | 'if' '(' Expr ')' Stmt 'else' Stmt { Fox.Abs.IfElse $3 $5 $7 }
+  | 'while' '(' Expr ')' Stmt { Fox.Abs.While $3 $5 }
+  | Expr ';' { Fox.Abs.SExp $1 }
+  | Fun { Fox.Abs.FSt $1 }
+
+Item :: { Fox.Abs.Item }
+Item : Ident '=' Expr { Fox.Abs.Init $1 $3 }
+
+ListItem :: { [Fox.Abs.Item] }
+ListItem : Item { (:[]) $1 } | Item ',' ListItem { (:) $1 $3 }
 
 Fun :: { Fox.Abs.Fun }
 Fun
   : Type Ident '(' ListArg ')' Block { Fox.Abs.FunDef $1 $2 $4 $6 }
-
-ListFun :: { [Fox.Abs.Fun] }
-ListFun : Fun { (:[]) $1 } | Fun ListFun { (:) $1 $2 }
 
 Arg :: { Fox.Abs.Arg }
 Arg
@@ -89,32 +110,6 @@ ListArg
   : {- empty -} { [] }
   | Arg { (:[]) $1 }
   | Arg ',' ListArg { (:) $1 $3 }
-
-Block :: { Fox.Abs.Block }
-Block : '{' ListStmt '}' { Fox.Abs.Bl $2 }
-
-ListStmt :: { [Fox.Abs.Stmt] }
-ListStmt : {- empty -} { [] } | Stmt ListStmt { (:) $1 $2 }
-
-Stmt :: { Fox.Abs.Stmt }
-Stmt
-  : Block { Fox.Abs.BlockStmt $1 }
-  | Type ListItem ';' { Fox.Abs.Decl $1 $2 }
-  | Ident '=' Expr ';' { Fox.Abs.Ass $1 $3 }
-  | 'return' Expr ';' { Fox.Abs.Ret $2 }
-  | 'if' '(' Expr ')' Stmt { Fox.Abs.If $3 $5 }
-  | 'if' '(' Expr ')' Stmt 'else' Stmt { Fox.Abs.IfElse $3 $5 $7 }
-  | 'while' '(' Expr ')' Stmt { Fox.Abs.While $3 $5 }
-  | Expr ';' { Fox.Abs.SExp $1 }
-  | Fun { Fox.Abs.FSt $1 }
-
-Item :: { Fox.Abs.Item }
-Item
-  : Ident { Fox.Abs.NoInit $1 }
-  | Ident '=' Expr { Fox.Abs.Init $1 $3 }
-
-ListItem :: { [Fox.Abs.Item] }
-ListItem : Item { (:[]) $1 } | Item ',' ListItem { (:) $1 $3 }
 
 Type :: { Fox.Abs.Type }
 Type

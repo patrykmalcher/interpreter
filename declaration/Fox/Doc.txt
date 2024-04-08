@@ -35,8 +35,8 @@ The reserved words used in Fox are the following:
   | ``var`` | ``while`` |  |
 
 The symbols used in Fox are the following:
-  | ( | ) | , | {
-  | } | ; | = | -
+  | { | } | ; | =
+  | , | ( | ) | -
   | ! | && | || | +
   | * | / | % | <
   | <= | > | >= | ==
@@ -51,15 +51,7 @@ The symbols -> (production),  **|**  (union)
 and **eps** (empty rule) belong to the BNF notation.
 All other symbols are terminals.
 
-  | //Program// | -> | //[Fun]//
-  | //Fun// | -> | //Type// //Ident// ``(`` //[Arg]// ``)`` //Block//
-  | //[Fun]// | -> | //Fun//
-  |  |  **|**  | //Fun// //[Fun]//
-  | //Arg// | -> | ``var`` //Type// //Ident//
-  |  |  **|**  | //Type// //Ident//
-  | //[Arg]// | -> | **eps**
-  |  |  **|**  | //Arg//
-  |  |  **|**  | //Arg// ``,`` //[Arg]//
+  | //Program// | -> | //[Stmt]//
   | //Block// | -> | ``{`` //[Stmt]// ``}``
   | //[Stmt]// | -> | **eps**
   |  |  **|**  | //Stmt// //[Stmt]//
@@ -72,10 +64,15 @@ All other symbols are terminals.
   |  |  **|**  | ``while`` ``(`` //Expr// ``)`` //Stmt//
   |  |  **|**  | //Expr// ``;``
   |  |  **|**  | //Fun//
-  | //Item// | -> | //Ident//
-  |  |  **|**  | //Ident// ``=`` //Expr//
+  | //Item// | -> | //Ident// ``=`` //Expr//
   | //[Item]// | -> | //Item//
   |  |  **|**  | //Item// ``,`` //[Item]//
+  | //Fun// | -> | //Type// //Ident// ``(`` //[Arg]// ``)`` //Block//
+  | //Arg// | -> | ``var`` //Type// //Ident//
+  |  |  **|**  | //Type// //Ident//
+  | //[Arg]// | -> | **eps**
+  |  |  **|**  | //Arg//
+  |  |  **|**  | //Arg// ``,`` //[Arg]//
   | //Type// | -> | ``int``
   |  |  **|**  | ``string``
   |  |  **|**  | ``boolean``
