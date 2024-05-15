@@ -137,13 +137,10 @@ typecheckStmt (BlStmt pos (Bl pos' stmts)) = do
             applyLocal env' stmt = local (const env') (typecheckStmt stmt)
 typecheckStmt (Decl pos ttype ident expr) = do
     (venv, fenv, fun) <- ask
-    case Map.lookup ident venv of
-        Just _ -> throwError $ "Redeclaration: " ++ showIdent ident ++ " already declared."
-        Nothing -> do
-            ttype' <- typecheckExpr expr
-            (if eqType ttype' ttype then (do
-                 let newVenv = Map.insert ident ttype venv
-                 return (newVenv, fenv, fun)) else throwError "Type mismatch.")
+    ttype' <- typecheckExpr expr
+    (if eqType ttype' ttype then (do
+            let newVenv = Map.insert ident ttype venv
+            return (newVenv, fenv, fun)) else throwError "Type mismatch.")
 typecheckStmt (Ass pos ident expr) = do
     (venv, fenv, fun) <- ask
     case Map.lookup ident venv of
@@ -180,35 +177,20 @@ typecheckStmt (While pos expr stmt) = do
         _ -> throwError "Type mismatch."
 typecheckStmt (FSt pos (FunDef pos' ttype ident args block)) = do
     (venv, fenv, fun) <- ask
-    case Map.lookup ident fenv of
-        Just _ -> throwError $ "Redeclaration: " ++ showIdent ident ++ " already declared."
-        _ -> do
-            newVenv <- foldM handleArg venv args
-            let newFenv = Map.insert ident (ttype, map mapArgToType args) fenv
+    newVenv <- foldM handleArg venv args
+    let newFenv = Map.insert ident (ttype, map mapArgToType args) fenv
 
-            local (const (newVenv, newFenv, Just ttype)) (typecheckStmt (BlStmt pos' block))
-            return (venv, newFenv, fun)
-                where
-                    mapArgToType (ArgVar _ ttype' _) = ttype'
-                    mapArgToType (ArgVal _ ttype' _) = ttype'
-                    handleArg venv' (ArgVar _ ttype' ident') = handleArgGeneric venv' ttype' ident'
-                    handleArg venv' (ArgVal _ ttype' ident') = handleArgGeneric venv' ttype' ident'
+    local (const (newVenv, newFenv, Just ttype)) (typecheckStmt (BlStmt pos' block))
+    return (venv, newFenv, fun)
+        where
+            mapArgToType (ArgVar _ ttype' _) = ttype'
+            mapArgToType (ArgVal _ ttype' _) = ttype'
+            handleArg venv' (ArgVar _ ttype' ident') = handleArgGeneric venv' ttype' ident'
+            handleArg venv' (ArgVal _ ttype' ident') = handleArgGeneric venv' ttype' ident'
 
-                    handleArgGeneric venv' ttype' ident' = do
-                        let venv'' = Map.insert ident' ttype' venv'
-                        return venv''
-
-
-            -- newVenv = foldM applyLocal venv args
-            -- newFenv = Map.insert ident (ttype, (getTypesFromArgs args)) fenv
-            -- local (const (venv, fenv, Just ttype)) (typecheckStmt (BlStmt pos' block))
-            -- return (venv, fenv, fun)
-                -- where
-                --     applyLocal venv' arg = local (const (venv'))
-                --     getTypesFromArgs args' = map getTypeFromArg args'
-                --     getTypeFromArg (ArgVar _ ttype' _) -> ttype'
-                --     getTypeFromArg (ArgVal _ ttype' _) -> ttype'
-
+            handleArgGeneric venv' ttype' ident' = do
+                let venv'' = Map.insert ident' ttype' venv'
+                return venv''
 
 typecheckProgram :: Program -> ReaderT Env (ExceptT String Identity) ()
 typecheckProgram (Prog pos stmts) = do
