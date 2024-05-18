@@ -26,6 +26,22 @@ Razem: 26
 
 Fox jest statycznie typowanym językiem imperatywnym. Znacząca część języka będzie zapożyczona z języka Latte. Język ten działa standardowo ze standardową składnią.
 
+## Interpreter
+
+### Opis
+
+Interpretowanie programu języka składa się z 3 części.
+1. Parsowanie - robione przez BNFC, na tym etapie sprawdzana jest składnia języka.
+2. Sprawdzenie typów - wykonywane przez TypeChecker.hs - sprawdza wszystkie błędy, które można wykryć statycznie, takie jak niepoprawność typów, użycie niezadeklarownych zmiennych, funkcje bez returna, czy zła liczba parametrów w wywołaniu.
+3. Interpreter - wykonywane przez Interpreter.hs - właściwa interpretacja. Jedyne na tym etapie błędy to błędy wykonania, takie jak np. dzielenie przez 0.
+
+### Użycie
+Interpreter można zbudować komendą `make`, a następnie używać `./interpreter program` lub `./interpreter`. W 2 przypadku program wczytywany jest ze standardowego wyjścia.
+
+### Testowanie
+`./test.sh`
+
+
 ## Program
 
 Program w języku Fox jest listą Instrukcji.
