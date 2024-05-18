@@ -5,10 +5,24 @@ import qualified Data.Map as Map
 import Control.Monad.Reader
 import Control.Monad.Except
 import Control.Monad.Identity
+import qualified Data.Set as Set
+import Data.Set (Set)
 
 type VEnv = Map.Map Ident Type
 type FEnv = Map.Map Ident (Type, [Type])
 type Env = (VEnv, FEnv, Maybe Type)
+
+showPos :: BNFC'Position -> String
+showPos (Just (line, col)) =
+    "line " ++ show line ++ " col "  ++ show col;
+
+showIdent :: Ident -> String
+showIdent (Ident id) = show id
+
+showType :: Type -> String
+showType (Int _) = "int"
+showType (Str _) = "string"
+showType (Bool _) = "boolean"
 
 eqType :: Type -> Type -> Bool
 eqType (Int _) (Int _) = True
@@ -37,11 +51,11 @@ typecheckExpr (EApp pos ident exprs) = do
         Just (ttype, ttypes) -> do
             (if length ttypes == length exprs then (do
                  forM_ (zip ttypes exprs) (uncurry ensureType)
-                 return ttype) else throwError "Number of arguments don't match.")
+                 return ttype) else throwError $ "Error in function function call at: " ++ showPos pos ++ ". Number of arguments don't match.")
             where
                 ensureType ttype' expr = do
                     exprType <- typecheckExpr expr
-                    (if eqType ttype' exprType then return ttype else throwError "Types of arguments don't match.")
+                    (if eqType ttype' exprType then return ttype else throwError $ "Error in function function call at: " ++ showPos pos ++ ". Types of arguments don't match.")
 typecheckExpr (EString pos string) = do
     return (Str pos)
 typecheckExpr (Neg pos expr) = do
@@ -125,9 +139,6 @@ typecheckExpr (EOr pos expr1 expr2) = do
     (if eqType expr1Type (Bool pos) && eqType expr2Type (Bool pos) then (do
          return expr1Type) else throwError "|| operator on non boolean types.")
 
-showIdent :: Ident -> String
-showIdent (Ident str) = str
-
 typecheckStmt :: Stmt -> ReaderT Env (ExceptT String Identity) Env
 typecheckStmt (BlStmt pos (Bl pos' stmts)) = do
     env <- ask
@@ -140,49 +151,59 @@ typecheckStmt (Decl pos ttype ident expr) = do
     ttype' <- typecheckExpr expr
     (if eqType ttype' ttype then (do
             let newVenv = Map.insert ident ttype venv
-            return (newVenv, fenv, fun)) else throwError "Type mismatch.")
+            return (newVenv, fenv, fun)) else throwError $ "Type mismatch in declaration at " ++ showPos pos ++ ". " ++ showIdent ident ++ " was declared as " ++ showType ttype ++ " but expression has type " ++ showType ttype' ++ ".")
 typecheckStmt (Ass pos ident expr) = do
     (venv, fenv, fun) <- ask
     case Map.lookup ident venv of
-        Nothing -> throwError $ showIdent ident ++ " not declared."
+        Nothing -> throwError $ "Error in assignment at " ++ showPos pos ++ ". " ++ showIdent ident ++ " is not declared."
         Just ttype -> do
             ttype' <- typecheckExpr expr
             (if eqType ttype' ttype then (do
-                 return (venv, fenv, fun)) else throwError "Type mismatch.")
+                 return (venv, fenv, fun)) else throwError $ "Type mismatch in assignment at " ++ showPos pos ++ ". " ++ showIdent ident ++ " has type " ++ showType ttype ++ " but expression has type " ++ showType ttype' ++ ".")
 typecheckStmt (Ret pos expr) = do
     (venv, fenv, fun) <- ask
     case fun of
-        Nothing -> throwError "Return outside of function."
+        Nothing -> throwError $ "Error in return at " ++ showPos pos ++ ". " ++ "Return outside of the function."
         Just ttype -> do
             ttype' <- typecheckExpr expr
             (if eqType ttype' ttype then (do
-                 return (venv, fenv, fun)) else throwError "Type mismatch.")
-typecheckStmt (If pos expr stmt) = do
+                 return (venv, fenv, fun)) else throwError $ "Type mismatch in return at " ++ showPos pos ++ ". " ++ "Function was declared " ++ showType ttype ++ " but expression has type " ++ showType ttype' ++ ".")
+typecheckStmt (If pos expr block) = do
     ttype <- typecheckExpr expr
     case ttype of
-        (Bool _) -> typecheckStmt stmt
-        _ -> throwError "Type mismatch."
-typecheckStmt (IfElse pos expr stmt1 stmt2) = do
-    ttype <- typecheckExpr expr
-    case ttype of
-        (Bool _) -> do
-            typecheckStmt stmt1
-            typecheckStmt stmt2
-        _ -> throwError "Type mismatch."
-typecheckStmt (While pos expr stmt) = do
+        (Bool _) -> typecheckStmt (BlStmt pos block)
+        _ -> throwError $ "Type mismatch in if at " ++ showPos pos ++ ". " ++ "Expression needs to be boolean, but was: " ++ showType ttype ++ "."
+typecheckStmt (IfElse pos expr block1 block2) = do
     ttype <- typecheckExpr expr
     case ttype of
         (Bool _) -> do
-            typecheckStmt stmt
-        _ -> throwError "Type mismatch."
+            typecheckStmt (BlStmt pos block1)
+            typecheckStmt (BlStmt pos block2)
+        _ -> throwError $ "Type mismatch in ifelse at " ++ showPos pos ++ ". " ++ "Expression needs to be boolean, but was: " ++ showType ttype ++ "."
+typecheckStmt (While pos expr block) = do
+    ttype <- typecheckExpr expr
+    case ttype of
+        (Bool _) -> do
+            typecheckStmt (BlStmt pos block)
+        _ -> throwError $ "Type mismatch in while at " ++ showPos pos ++ ". " ++ "Expression needs to be boolean, but was: " ++ showType ttype ++ "."
 typecheckStmt (FSt pos (FunDef pos' ttype ident args block)) = do
     (venv, fenv, fun) <- ask
+    assureUniqueIdents args Set.empty
     newVenv <- foldM handleArg venv args
     let newFenv = Map.insert ident (ttype, map mapArgToType args) fenv
 
     local (const (newVenv, newFenv, Just ttype)) (typecheckStmt (BlStmt pos' block))
     return (venv, newFenv, fun)
         where
+            assureUniqueIdents :: [Arg] -> Set.Set Ident -> ReaderT Env (ExceptT String Identity) ()
+            assureUniqueIdents [] seen = return ()
+            assureUniqueIdents ((ArgVal _ ttype' ident'):xs) seen = do
+                (if ident' `Set.member` seen then throwError $ "Error in function declaration at: " ++ showPos pos ++ ". Arguments identifiers aren't unique."
+                 else assureUniqueIdents xs (Set.insert ident' seen))
+            assureUniqueIdents ((ArgVar _ ttype' ident'):xs) seen = do
+                (if ident' `Set.member` seen then throwError $ "Error in function declaration at: " ++ showPos pos ++ ". Arguments identifiers aren't unique."
+                 else assureUniqueIdents xs (Set.insert ident' seen))
+
             mapArgToType (ArgVar _ ttype' _) = ttype'
             mapArgToType (ArgVal _ ttype' _) = ttype'
             handleArg venv' (ArgVar _ ttype' ident') = handleArgGeneric venv' ttype' ident'
@@ -191,6 +212,10 @@ typecheckStmt (FSt pos (FunDef pos' ttype ident args block)) = do
             handleArgGeneric venv' ttype' ident' = do
                 let venv'' = Map.insert ident' ttype' venv'
                 return venv''
+typecheckStmt (Print pos expr) = do
+    env <- ask
+    typecheckExpr expr
+    return env
 
 typecheckProgram :: Program -> ReaderT Env (ExceptT String Identity) ()
 typecheckProgram (Prog pos stmts) = do
@@ -201,4 +226,3 @@ typecheckProgram (Prog pos stmts) = do
 
 typecheck :: Program -> Either String ()
 typecheck program = runIdentity (runExceptT (runReaderT (typecheckProgram program) (Map.empty, Map.empty, Nothing)))
-
