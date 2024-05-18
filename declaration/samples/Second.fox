@@ -1,8 +1,0 @@
-int i = 0;
-
-// while, if
-while (i < 10){
-    if (i % 2 == 0) printInt(i) ;
-    i = i + 1 ;
-}
-printInt(i) ;

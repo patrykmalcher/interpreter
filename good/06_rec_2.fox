@@ -1,0 +1,27 @@
+int fact (int n) {
+    print "rekurencja";
+
+    if (n < 2) {
+        return 1;
+    }
+    else {
+        return n * fact(n - 1);
+    }
+}
+
+print fact(4);
+
+int fact(int n) {
+    print "iteracja";
+    
+    int i = 1; int r = 1;
+
+    while (i < n + 1) {
+        r = r * i;
+        i = i + 1;
+    }
+
+    return r;
+}
+
+print fact(4);

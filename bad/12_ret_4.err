@@ -1,0 +1,1 @@
+Type mismatch in return at line 2 col 5. Function was declared int but expression has type string.

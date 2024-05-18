@@ -1,0 +1,26 @@
+int i = 1;
+string s = "abc";
+boolean b = false;
+
+print i < 2;
+print "abc" < "abcd";
+
+print i <= 2;
+print s <= "abcd";
+
+print i > 2;
+print "abc" > "abcd";
+
+print i >= 2;
+print s >= "abcd";
+
+print i == 1;
+print s == "abc";
+print b == false;
+
+print i != 1;
+print s != "abc";
+print b != false;
+
+print b && true;
+print b || true;

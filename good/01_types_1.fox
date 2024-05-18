@@ -1,0 +1,20 @@
+int ifun() {
+    return 1;
+}
+
+string sfun() {
+    return "s";
+}
+
+boolean bfun() {
+    return false;
+}
+
+int i = ifun();
+print i;
+
+string s = sfun();
+print s;
+
+boolean b = bfun();
+print b;

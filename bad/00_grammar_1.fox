@@ -1,0 +1,6 @@
+int f() {
+    return 0;
+}
+
+// Wyrażanie nie jest poprawną instrukcją.
+f();

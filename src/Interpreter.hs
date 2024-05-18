@@ -7,9 +7,14 @@ import Control.Monad.Except
 import Control.Monad.Identity
 import qualified Data.Map as Map
 import qualified Data.Map.Internal.Debug
+import System.IO
 
 type Loc = Int
 data Value = IntVal Integer | BoolVal Bool | StringVal String
+
+showPos :: BNFC'Position -> String
+showPos (Just (line, col)) =
+    "line " ++ show line ++ " col "  ++ show col;
 
 instance Eq Value where
     (IntVal x) == (IntVal y) = x == y
@@ -28,10 +33,10 @@ instance Show Value where
     show (StringVal x) = show x
 
 negOp :: Value -> Value
-negOp (IntVal i) = (IntVal) (negate i)
+negOp (IntVal i) = IntVal (negate i)
 
 notOp :: Value -> Value
-notOp (BoolVal b) = (BoolVal) (not b)
+notOp (BoolVal b) = BoolVal (not b)
 
 plusOp :: Value -> Value -> Value
 plusOp (IntVal x) (IntVal y) = IntVal (x + y)
@@ -65,7 +70,7 @@ modifyVStore f = modify (\(vstore, fstore, val) -> (f vstore, fstore, val))
 modifyFStore :: (FStore -> FStore) -> ReaderT Env (StateT Store (ExceptT String IO)) ()
 modifyFStore f = modify (\(vstore, fstore, val) -> (vstore, f fstore, val))
 
-modifyVal :: (Maybe Value) -> ReaderT Env (StateT Store (ExceptT String IO)) ()
+modifyVal :: Maybe Value -> ReaderT Env (StateT Store (ExceptT String IO)) ()
 modifyVal newVal = modify (\(vstore, fstore, val) -> (vstore, fstore, newVal))
 
 newLocV :: VStore -> Loc
@@ -126,7 +131,7 @@ interpretExpr (EApp pos ident exprs) = do
                     return ((Map.insert id newloc venvd, fenvd), (venve, fenve), Nothing)
                 (ArgVar _ ttype id) -> do
                     case expr of
-                        EVar _ id' -> do                    
+                        EVar _ id' -> do
                             case Map.lookup id' venve of
                                 Just loc -> do
                                     return ((Map.insert id loc venvd, fenvd), (venve, fenve), Nothing)
@@ -157,7 +162,9 @@ interpretExpr (EMul pos expr1 (Times _) expr2) = do
 interpretExpr (EMul pos expr1 (Div _) expr2) = do
     expr1Val <- interpretExpr expr1
     expr2Val <- interpretExpr expr2
-    return (divideOp expr1Val expr2Val)
+    case expr2Val of
+        IntVal 0 -> throwError $ "Error: division by zero at " ++ showPos pos ++ "."
+        _ -> return (divideOp expr1Val expr2Val)
 interpretExpr (EMul pos expr1 (Mod _) expr2) = do
     expr1Val <- interpretExpr expr1
     expr2Val <- interpretExpr expr2
@@ -176,11 +183,11 @@ interpretExpr (ERel pos expr1 (GE _) expr2) = do
     return (BoolVal (expr1Val >= expr2Val))
 interpretExpr (EAnd pos expr1 expr2) = do
     expr1Val <- interpretExpr expr1
-    expr2Val <- interpretExpr expr2   
+    expr2Val <- interpretExpr expr2
     return (andOp expr1Val expr2Val)
 interpretExpr (EOr pos expr1 expr2) = do
     expr1Val <- interpretExpr expr1
-    expr2Val <- interpretExpr expr2   
+    expr2Val <- interpretExpr expr2
     return (orOp expr1Val expr2Val)
 
 interpretStmt :: Stmt -> ReaderT Env (StateT Store (ExceptT String IO)) Env
@@ -282,7 +289,7 @@ interpretStmt (FSt pos (FunDef pos' ttype ident args block)) = do
     (venv, fenv) <- ask
     (vstore, fstore, val) <- get
     case val of
-        Just _ -> do 
+        Just _ -> do
             return (venv, fenv)
         Nothing -> do
             let newloc = newLocF fstore
@@ -307,5 +314,5 @@ interpret :: Program -> IO ()
 interpret program = do
     result <- runExceptT (runStateT (runReaderT (interpretProgram program) initEnv) initStore)
     case result of
-        Left err -> putStrLn err
+        Left err -> hPutStrLn stderr err
         Right _ -> return ()

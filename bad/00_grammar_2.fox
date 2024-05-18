@@ -1,0 +1,2 @@
+// Brak deklaracji po przecinku.
+int x = 0, y = 0;

@@ -1,0 +1,1 @@
+Type mismatch in + operator at line 1 col 12. Left side of expression was type string, but right was type int.

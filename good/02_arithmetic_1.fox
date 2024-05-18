@@ -1,0 +1,17 @@
+int i = 1;
+boolean b = false;
+string s = "abc";
+
+print -i;
+
+print !b;
+
+print i * 2;
+print 2 / i;
+print 2 % i;
+
+print i + 1;
+print i - 1;
+print s + "def";
+
+print 2 + 2 * 2;

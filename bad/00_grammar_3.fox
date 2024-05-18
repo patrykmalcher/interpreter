@@ -1,0 +1,5 @@
+int x = 0;
+
+// If, else, while muszą być otoczone klamerkami.
+if (true)
+    x = 1;

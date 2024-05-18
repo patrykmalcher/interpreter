@@ -1,0 +1,8 @@
+int przezwartosc(int x) {
+    x = x + 1;
+    return x;
+}
+
+int x = 0;
+print przezwartosc(x);
+print x;

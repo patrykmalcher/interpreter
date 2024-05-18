@@ -1,0 +1,11 @@
+int x = 1;
+
+print x;
+
+string s = "a";
+
+print s;
+
+boolean b = true;
+
+print b;

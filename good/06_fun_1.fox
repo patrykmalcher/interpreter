@@ -1,0 +1,19 @@
+int f1(int a, string b, boolean c) {
+    print a;
+    print b;
+    print c;
+
+    return a;
+}
+
+string f2() {
+    return "f2";
+}
+
+boolean f3() {
+    return true;
+}
+
+print f1(1, "abc", false);
+print f2();
+print f3();

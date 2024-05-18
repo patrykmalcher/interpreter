@@ -1,0 +1,18 @@
+int f() {
+    return 1;
+    print "Already returned";
+}
+
+boolean g() {
+    return true;
+    print "Already returned";
+}
+
+string s() {
+    return "abc";
+    print "Already returned";
+}
+
+print f();
+print g();
+print s();

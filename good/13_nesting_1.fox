@@ -1,0 +1,26 @@
+int f(int x) {
+    print "f zewnetrzna";
+    print x;
+
+    int f(int x) {
+        print "f srodkowa";
+        print x;
+
+        int f(int x) {
+            print "f wewnetrzna";
+            print x;
+            return 0;
+            print "fail";
+        }
+
+        int skip = f(x + 1);
+        return 0;
+        print "fail";
+    }
+
+    int skip = f(x + 1);
+    return 0;
+    print "fail";
+}
+
+int skip = f(0);

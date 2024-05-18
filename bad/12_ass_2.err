@@ -1,0 +1,1 @@
+Type mismatch in assignment at line 3 col 1. "x" has type int but expression has type string.

@@ -1,0 +1,14 @@
+int a = 2;
+a = 4;
+
+print a;
+
+string b = "a";
+b = "b";
+
+print b;
+
+boolean c = false;
+c = true;
+
+print c;

@@ -1,0 +1,11 @@
+string s  = "przedf";
+
+int f() {
+    print s;
+    return 0;
+}
+
+string s = "pof";
+print s;
+int skip = f();
+print s;

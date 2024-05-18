@@ -1,0 +1,22 @@
+int zewnetrzna() {
+    int x = 500;
+
+    int zmglob() {
+        x = x + 1;
+        print x; // zewnetrzny x: 501
+        return x;
+    }
+
+    int zmlok() {
+        int x = 10;
+        int skip = zmglob();
+        print x; // lokalny x: 10
+        return x;
+    }
+
+    int skip = zmlok();
+    print x; // zewnetrzny x: 501
+    return x;
+}
+
+int skip = zewnetrzna();
