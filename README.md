@@ -33,7 +33,7 @@ Program w języku Fox jest listą Instrukcji.
 ```ebnf
 entrypoints Program ;
 
-Prog. Program ::= [Stmt] ;
+Prog. Program ::= [Stmt];
 ```
 
 ## Instrukcje
@@ -43,59 +43,49 @@ Większość dziala standardowo - jak w Latte, czyli składniowo jak C/Java.
 Blok:
 
 ```ebnf
-Bl. Block ::= "{" [Stmt] "}" ;
+Bl. Block ::= "{" [Stmt] "}";
 
 separator  Stmt "" ;
 
-BlStmt. Stmt ::= Block ;
+BlStmt. Stmt ::= Block;
 ```
 
 Deklaracja - konieczna jest inicjalizacja:
 
 ```ebnf
-Decl.      Stmt ::= Type [Item] ";" ;
-
-Init.      Item ::= Ident "=" Expr ;
-
-separator nonempty Item "," ;
+Decl. Stmt ::= Type Ident "=" Expr ";";
 ```
 
 Przypisanie:
 
 ```ebnf
-Ass. Stmt ::= Ident "=" Expr ";" ;
+Ass. Stmt ::= Ident "=" Expr ";";
 ```
 
 Return - musi zwracać typ:
 
 ```ebnf
-Ret. Stmt ::= "return" Expr ";" ;
+Ret. Stmt ::= "return" Expr ";";
 ```
 
 If + else:
 
 ```ebnf
-If. Stmt ::= "if" "(" Expr ")" Stmt  ;
+If. Stmt ::= "if" "(" Expr ")" Block;
 
-IfElse. Stmt ::= "if" "(" Expr ")" Stmt "else" Stmt  ;
+IfElse. Stmt ::= "if" "(" Expr ")" Block "else" Block;
 ```
 
 While:
 
 ```ebnf
-While. Stmt ::= "while" "(" Expr ")" Stmt ;
-```
-
-Wyrażenie:
-
-```ebnf
-SExp.      Stmt ::= Expr  ";" ;
+While. Stmt ::= "while" "(" Expr ")" Block;
 ```
 
 Deklaracja funkcji:
 
 ```ebnf
-FSt. Stmt ::= Fun ;
+FSt. Stmt ::= Fun;
 ```
 
 ## Funkcje
@@ -107,13 +97,13 @@ Funkcja składa się z:
 - ciała
 
 ```ebnf
-FunDef. Fun ::= Type Ident "(" [Arg] ")" Block ;
+FunDef. Fun ::= Type Ident "(" [Arg] ")" Block;
 
-ArgVar. Arg ::= "var" Type Ident ;
+ArgVar. Arg ::= "var" Type Ident;
 
-ArgVal. Arg ::= Type Ident ;
+ArgVal. Arg ::= Type Ident;
 
-separator  Arg "," ;
+separator Arg "," ;
 ```
 
 ### Paramatry funkcji
@@ -137,11 +127,11 @@ Ciało funkcji składa się z z bloku instrukcji.
 Trzy podstawowe: int, string, boolean. W szczególności brak typu void.
 
 ```ebnf
-Int.  Type ::= "int" ;
+Int. Type ::= "int";
 
-Str.  Type ::= "string" ;
+Str. Type ::= "string";
 
-Bool. Type ::= "boolean" ;
+Bool. Type ::= "boolean";
 ```
 
 ## Wyrażenia
@@ -149,35 +139,35 @@ Bool. Type ::= "boolean" ;
 Podzbiór zbioru wyrażeń dostępnych w Javie - Taki jak w Latte. Wyrażenia logiczne zwracają typ boolean i są obliczane leniwie. Arytmetyka zupełnie standardowa.
 
 ```ebnf
-EVar.      Expr6 ::= Ident ;
+EVar. Expr6 ::= Ident;
 
-ELitInt.   Expr6 ::= Integer ;
+ELitInt. Expr6 ::= Integer;
 
-ELitTrue.  Expr6 ::= "true" ;
+ELitTrue. Expr6 ::= "true";
 
-ELitFalse. Expr6 ::= "false" ;
+ELitFalse. Expr6 ::= "false";
 
-EApp.      Expr6 ::= Ident "(" [Expr] ")" ;
+EApp. Expr6 ::= Ident "(" [Expr] ")";
 
-EString.   Expr6 ::= String ;
+EString. Expr6 ::= String;
 
-Neg.       Expr5 ::= "-" Expr6 ;
+Neg. Expr5 ::= "-" Expr6;
 
-Not.       Expr5 ::= "!" Expr6 ;
+Not. Expr5 ::= "!" Expr6;
 
-EMul.      Expr4 ::= Expr4 MulOp Expr5 ;
+EMul. Expr4 ::= Expr4 MulOp Expr5;
 
-EAdd.      Expr3 ::= Expr3 AddOp Expr4 ;
+EAdd. Expr3 ::= Expr3 AddOp Expr4;
 
-ERel.      Expr2 ::= Expr2 RelOp Expr3 ;
+ERel. Expr2 ::= Expr2 RelOp Expr3;
 
-EAnd.      Expr1 ::= Expr2 "&&" Expr1 ;
+EAnd. Expr1 ::= Expr2 "&&" Expr1;
 
-EOr.       Expr ::= Expr1 "||" Expr ;
+EOr. Expr ::= Expr1 "||" Expr;
 
-coercions  Expr 6 ;
+coercions Expr 6;
 
-separator  Expr "," ;
+separator Expr ",";
 ```
 
 ## Operatory
@@ -185,146 +175,45 @@ separator  Expr "," ;
 j.w.
 
 ```ebnf
-Plus.      AddOp ::= "+" ;
+Plus. AddOp ::= "+";
 
-Minus.     AddOp ::= "-" ;
+Minus. AddOp ::= "-";
 
-Times.     MulOp ::= "*" ;
+Times. MulOp ::= "*";
 
-Div.       MulOp ::= "/" ;
+Div. MulOp ::= "/";
 
-Mod.       MulOp ::= "%" ;
+Mod. MulOp ::= "%";
 
-LTH.       RelOp ::= "<" ;
+LTH. RelOp ::= "<";
 
-LE.        RelOp ::= "<=" ;
+LE. RelOp ::= "<=";
 
-GTH.       RelOp ::= ">" ;
+GTH. RelOp ::= ">";
 
-GE.        RelOp ::= ">=" ;
+GE. RelOp ::= ">=";
 
-EQU.       RelOp ::= "==" ;
+EQU. RelOp ::= "==";
 
-NE.        RelOp ::= "!=" ;
+NE. RelOp ::= "!=";
 ```
 
 ## Komentarze
 
 ```ebnf
-comment    "//" ;
+comment "//";
 ```
 
 ### Predefiniowane funkcje
 
-```C
-int printInt(int)
-int printString(string)
-int printBoolean(boolean)
-int error()
+```ebnf
+Print. Stmt ::= "print" Expr ";";
 ```
-
-Funkcja error wypisuje error i kończy wykonywanie programu. Ze względu na brak typu void, funkcję zwracają wartość 0.
 
 ### Konflikty
 
-Gramatyka pozbawiona konfliktów poza standardowym problemem "dangling else", który już występuje w Latte. Zgodnie z dokumentacją BNFC: In case of a shift/reduce conflict, the parser always shifts. 
+Gramatyka pozbawiona konfliktów.
 
 ### Przykładowe programy
 
-```C
-// Trzy typy, zmienne, deklaracja.
-int i1 = 0, i2 = 0, i3 = 0;
-string s1 = "s1", s2 = "s2";
-boolean b1 = false;
-
-// Przypisanie, arytmetyka, literały, porównania.
-i1 = i2 + i3 * 2;
-b3 = i1 < i2;
-
-// Print
-printInt(i1);
-printBoolean(b3);
-```
-
-```C
-int i = 0;
-
-// while, if
-while (i < 10){
-    if (i % 2 == 0) printInt(i) ;
-    i = i + 1 ;
-}
-printInt(i) ;
-```
-
-```C
-// Funkcje, rekurencja
-
-// iteracyjnie
-int fact (int n) {
-  int i = 1, r = 1 ;
-
-  while (i < n+1) {
-    r = r * i ;
-    i = i + 1 ;
-  }
-  return r ;
-}
-
-// rekurencyjnie
-int factr (int n) {
-  if (n < 2)
-    return 1 ;
-  else
-    return (n * factr(n-1)) ;
-}
-
-printInt(fact(7)) ;
-printInt(factr(7)) ;
-```
-
-```C
-// Parametr przez zmienna / wartosc
-// Funkcje przyjmujące, zwracające wartość
-
-int przezZmienna(var int zmienna) {
-    zmienna = zmienna + 1 ;
-    return zmienna;
-}
-
-int przezWartosc(int zmienna) {
-    zmienna = zmienna + 1 ;
-    return zmienna;
-}
-
-int x = 0, y = 0;
-
-int skip = przezZmienna(x) + przezWartosc(y);
-```
-
-```C
-// Zagnieżdżone funkcje, statyczne wiązanie
-
-int zewnetrzna() {
-    int x = 500;
-
-    int zmglob() {
-        x = x + 1;
-        printInt(x); // zewnętrzny x: 501
-        return x;
-    }
-
-    int zmlok() {
-        int x = 10;
-        zmglob();
-        printInt(x); // lokalny x: 10
-        return x;
-    }
-
-    int skip1 = zmlok();
-    printInt(x); // zewnętrzny x: 501
-    return x;
-}
-
-int skip = zewnetrzna();
-```
+Poprawne umieszczone w katalogu `good` or niepoprawne w katologu `bad`.
