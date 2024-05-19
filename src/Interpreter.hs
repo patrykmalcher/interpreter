@@ -8,6 +8,7 @@ import Control.Monad.Identity
 import qualified Data.Map as Map
 import qualified Data.Map.Internal.Debug
 import System.IO
+import System.Exit (exitWith, ExitCode(ExitFailure))
 
 type Loc = Int
 data Value = IntVal Integer | BoolVal Bool | StringVal String
@@ -314,5 +315,7 @@ interpret :: Program -> IO ()
 interpret program = do
     result <- runExceptT (runStateT (runReaderT (interpretProgram program) initEnv) initStore)
     case result of
-        Left err -> hPutStrLn stderr err
+        Left err -> do
+            hPutStrLn stderr err
+            exitWith (ExitFailure 1)
         Right _ -> return ()
