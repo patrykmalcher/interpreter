@@ -36,7 +36,7 @@ Interpretowanie programu języka składa się z 3 części.
 3. Interpreter - wykonywane przez Interpreter.hs - właściwa interpretacja. Jedyne na tym etapie błędy to błędy wykonania, takie jak np. dzielenie przez 0.
 
 ### Użycie
-Interpreter można zbudować komendą `make`, a następnie używać `./interpreter program` lub `./interpreter`. W 2 przypadku program wczytywany jest ze standardowego wyjścia.
+Interpreter można zbudować komendą `make`, a następnie używać `./interpreter program` lub `./interpreter`. W 2 przypadku program wczytywany jest ze standardowego wejścia.
 
 ### Testowanie
 `./test.sh`
