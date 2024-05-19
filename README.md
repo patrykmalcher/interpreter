@@ -35,6 +35,15 @@ Interpretowanie programu języka składa się z 3 części.
 2. Sprawdzenie typów - wykonywane przez TypeChecker.hs - sprawdza wszystkie błędy, które można wykryć statycznie, takie jak niepoprawność typów, użycie niezadeklarownych zmiennych, funkcje bez returna, czy zła liczba parametrów w wywołaniu.
 3. Interpreter - wykonywane przez Interpreter.hs - właściwa interpretacja. Jedyne na tym etapie błędy to błędy wykonania, takie jak np. dzielenie przez 0.
 
+### Typechecker
+Poczas sprawdzania typów używam środowiska, który jest krotką `(VEnv, FEnv, Maybe Type, Bool)`. Są to odpowiedno środowisko zmiennych, funkcji, typ funkcji w której aktualnie się znajdujemy, i flaga czy był return.
+
+### Interpreter
+W interpreterze środowisko to krotka `(Venv, Fenv)` odpowiednio dająca lokację dla funkcji i zmiennych. Stanem jest krotka `(VStore, FStore, Maybe Value)`, tutaj dodakowo propraguję wartość ostatniego returna.
+
+<br>
+Całe technika opiera się na standardowej semantyce programów ze statycznym wiązaniem i przysłanianiem.
+
 ### Użycie
 Interpreter można zbudować komendą `make`, a następnie używać `./interpreter program` lub `./interpreter`. W 2 przypadku program wczytywany jest ze standardowego wejścia.
 
